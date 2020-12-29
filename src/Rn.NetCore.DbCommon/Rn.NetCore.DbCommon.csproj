@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Richard Niemand</Authors>
+    <Description>Simple DB helper classes for my various projects</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0.101</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Rn.NetCore.Common" Version="3.0.0.100" />
+  </ItemGroup>
 
 </Project>
