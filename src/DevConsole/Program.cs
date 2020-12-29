@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using DevConsole.DatabaseTesting.Repos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ using Rn.NetCore.Common.Encryption;
 using Rn.NetCore.Common.Helpers;
 using Rn.NetCore.Common.Logging;
 using Rn.NetCore.Common.Metrics;
+using Rn.NetCore.DbCommon;
 
 namespace DevConsole
 {
@@ -20,6 +22,13 @@ namespace DevConsole
     static void Main(string[] args)
     {
       ConfigureDI();
+
+      var userRepo = _serviceProvider.GetService<IUserRepo>();
+
+      var userEntity = userRepo.GetUser()
+        .ConfigureAwait(false)
+        .GetAwaiter()
+        .GetResult();
 
       Console.WriteLine("Hello World!");
     }
@@ -36,6 +45,7 @@ namespace DevConsole
         .Build();
 
       ConfigureDI_Core(services, config);
+      ConfigureDI_DBComponents(services);
 
       _serviceProvider = services.BuildServiceProvider();
       _logger = _serviceProvider.GetService<ILoggerAdapter<Program>>();
@@ -58,6 +68,13 @@ namespace DevConsole
           loggingBuilder.SetMinimumLevel(LogLevel.Trace);
           loggingBuilder.AddNLog(config);
         });
+    }
+
+    private static void ConfigureDI_DBComponents(IServiceCollection services)
+    {
+      services
+        .AddSingleton<IDbHelper, DbHelper>()
+        .AddSingleton<IUserRepo, UserRepo>();
     }
   }
 }
