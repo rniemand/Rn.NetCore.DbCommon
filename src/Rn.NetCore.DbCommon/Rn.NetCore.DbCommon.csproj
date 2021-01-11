@@ -6,13 +6,14 @@
     <Authors>Richard Niemand</Authors>
     <Description>Simple DB helper classes for my various projects</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.0.102</Version>
+    <Version>1.0.0.103</Version>
+    <AssemblyVersion>1.0.0.103</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.78" />
     <PackageReference Include="MySql.Data" Version="8.0.22" />
-    <PackageReference Include="Rn.NetCore.Common" Version="3.0.0.100" />
+    <PackageReference Include="Rn.NetCore.Common" Version="3.0.0.104" />
   </ItemGroup>
 
 </Project>

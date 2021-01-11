@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rn.NetCore.DbCommon", "Rn.NetCore.DbCommon\Rn.NetCore.DbCommon.csproj", "{0EE2FC66-96F9-4027-8069-77158EC5222D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevConsole", "DevConsole\DevConsole.csproj", "{F6D6A1EE-015C-4C95-90D5-878D36971A88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevConsole", "DevConsole\DevConsole.csproj", "{F6D6A1EE-015C-4C95-90D5-878D36971A88}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{A1FEB665-10CB-4590-848B-E4E41B4C52F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +26,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0EE2FC66-96F9-4027-8069-77158EC5222D} = {A1FEB665-10CB-4590-848B-E4E41B4C52F1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {66B6A836-5054-4212-BB79-5B53F3BC396F}

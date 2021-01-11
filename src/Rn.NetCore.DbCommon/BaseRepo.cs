@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Rn.NetCore.Common.Logging;
 using Rn.NetCore.Common.Metrics;
+using Rn.NetCore.Common.Metrics.Builders;
 
 namespace Rn.NetCore.DbCommon
 {
@@ -26,7 +27,6 @@ namespace Rn.NetCore.DbCommon
       string connectionName)
     {
       // TODO: [TESTS] (BaseRepo.BaseRepo) Add tests
-
       Logger = logger;
       DbHelper = dbHelper;
       MetricService = metricService;
@@ -39,61 +39,117 @@ namespace Rn.NetCore.DbCommon
     protected async Task<List<T>> GetList<T>(string methodName, string sql, object param = null)
     {
       // TODO: [TESTS] (BaseRepo.GetList) Add tests
-      // TODO: [METRICS] (BaseRepo.GetList) Add metrics
-
-      LogSqlCommand(methodName, sql, param);
+      var builder = new RepoMetricBuilder(RepoName, methodName, nameof(GetList))
+        .ForConnection(ConnectionName)
+        .WithHasParams(param)
+        .WithCustomTag1(typeof(T).Name);
 
       try
       {
-        using var connection = DbHelper.GetConnection(ConnectionName);
-        var results = await connection.QueryAsync<T>(sql, param);
-        var resultList = results.ToList();
-        return resultList;
+        LogSqlCommand(methodName, sql, param);
+
+        using (builder.WithTiming())
+        {
+          using var connection = DbHelper.GetConnection(ConnectionName);
+
+          IEnumerable<T> results;
+          using (builder.WithCustomTiming1())
+            results = await connection.QueryAsync<T>(sql, param);
+
+          List<T> resultList;
+          using (builder.WithCustomTiming2())
+            resultList = results.ToList();
+
+          builder.WithResultCount(resultList.Count);
+          return resultList;
+        }
       }
       catch (Exception ex)
       {
         Logger.Error(ex, "Error running SQL query: {sql}", sql);
+        builder.WithException(ex);
         return new List<T>();
+      }
+      finally
+      {
+        await MetricService.SubmitPointAsync(builder);
       }
     }
 
     protected async Task<T> GetSingle<T>(string methodName, string sql, object param = null)
     {
       // TODO: [TESTS] (BaseRepo.GetSingle) Add tests
-      // TODO: [METRICS] (BaseRepo.GetSingle) Add metrics
-      LogSqlCommand(methodName, sql, param);
+      var builder = new RepoMetricBuilder(RepoName, methodName, nameof(GetSingle))
+        .ForConnection(ConnectionName)
+        .WithHasParams(param)
+        .WithCustomTag1(typeof(T).Name);
 
       try
       {
-        using var connection = DbHelper.GetConnection(ConnectionName);
-        var results = await connection.QueryAsync<T>(sql, param);
-        var actualResult = results.FirstOrDefault();
-        return actualResult;
+        LogSqlCommand(methodName, sql, param);
+
+        using (builder.WithTiming())
+        {
+          using var connection = DbHelper.GetConnection(ConnectionName);
+
+          IEnumerable<T> results;
+          using (builder.WithCustomTiming1())
+            results = await connection.QueryAsync<T>(sql, param);
+
+          var actualResult = results.FirstOrDefault();
+          builder.CountResult(actualResult);
+
+          return actualResult;
+        }
       }
       catch (Exception ex)
       {
         Logger.Error(ex, "Error running SQL query: {sql}", sql);
-        return default(T);
+        builder.WithException(ex);
+        return default;
+      }
+      finally
+      {
+        await MetricService.SubmitPointAsync(builder);
       }
     }
 
     protected async Task<int> ExecuteAsync(string methodName, string sql, object param = null)
     {
       // TODO: [TESTS] (BaseRepo.ExecuteAsync) Add tests
-      // TODO: [METRICS] (BaseRepo.ExecuteAsync) Add metrics
+      var builder = new RepoMetricBuilder(RepoName, methodName, nameof(ExecuteAsync))
+        .ForConnection(ConnectionName)
+        .WithHasParams(param);
 
-      LogSqlCommand(methodName, sql, param);
+      if (param != null)
+        builder.WithCustomTag1(param.GetType().Name);
 
       try
       {
-        using var connection = DbHelper.GetConnection(ConnectionName);
-        var numRows = await connection.ExecuteAsync(sql, param);
-        return numRows;
+        LogSqlCommand(methodName, sql, param);
+
+        using (builder.WithTiming())
+        {
+          using var connection = DbHelper.GetConnection(ConnectionName);
+
+          int numRows;
+          using (builder.WithCustomTiming1())
+            numRows = await connection.ExecuteAsync(sql, param);
+
+          builder.WithResultCount(numRows);
+
+          return numRows;
+        }
       }
       catch (Exception ex)
       {
         Logger.Error(ex, "Error running SQL query: {sql}", sql);
+        builder.WithException(ex);
         return 0;
+      }
+      finally
+      {
+        await MetricService.SubmitPointAsync(builder);
       }
     }
 

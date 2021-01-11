@@ -10,7 +10,9 @@ using Rn.NetCore.Common.Encryption;
 using Rn.NetCore.Common.Helpers;
 using Rn.NetCore.Common.Logging;
 using Rn.NetCore.Common.Metrics;
+using Rn.NetCore.Common.Metrics.Interfaces;
 using Rn.NetCore.DbCommon;
+using Rn.NetCore.Metrics.Rabbit;
 
 namespace DevConsole
 {
@@ -23,8 +25,7 @@ namespace DevConsole
     {
       ConfigureDI();
 
-      var userRepo = _serviceProvider.GetService<IUserRepo>();
-
+      var userRepo = _serviceProvider.GetRequiredService<IUserRepo>();
       var userEntity = userRepo.GetUser()
         .ConfigureAwait(false)
         .GetAwaiter()
@@ -46,6 +47,7 @@ namespace DevConsole
 
       ConfigureDI_Core(services, config);
       ConfigureDI_DBComponents(services);
+      ConfigureDI_Metrics(services);
 
       _serviceProvider = services.BuildServiceProvider();
       _logger = _serviceProvider.GetService<ILoggerAdapter<Program>>();
@@ -58,7 +60,6 @@ namespace DevConsole
         .AddSingleton(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>))
         .AddSingleton<IEncryptionService, EncryptionService>()
         .AddSingleton<IEncryptionUtils, EncryptionUtils>()
-        .AddSingleton<IMetricService, MetricService>()
         .AddSingleton<IDateTimeAbstraction, DateTimeAbstraction>()
         .AddSingleton<IJsonHelper, JsonHelper>()
         .AddLogging(loggingBuilder =>
@@ -75,6 +76,15 @@ namespace DevConsole
       services
         .AddSingleton<IDbHelper, DbHelper>()
         .AddSingleton<IUserRepo, UserRepo>();
+    }
+
+    private static void ConfigureDI_Metrics(IServiceCollection services)
+    {
+      services
+        .AddSingleton<IMetricService, MetricService>()
+        .AddSingleton<IMetricOutput, RabbitMetricOutput>()
+        .AddSingleton<IRabbitFactory, RabbitFactory>()
+        .AddSingleton<IRabbitConnection, RabbitConnection>();
     }
   }
 }
