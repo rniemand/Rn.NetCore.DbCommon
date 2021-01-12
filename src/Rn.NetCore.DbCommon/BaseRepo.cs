@@ -41,7 +41,7 @@ namespace Rn.NetCore.DbCommon
       // TODO: [TESTS] (BaseRepo.GetList) Add tests
       var builder = new RepoMetricBuilder(RepoName, methodName, nameof(GetList))
         .ForConnection(ConnectionName)
-        .WithHasParams(param)
+        .WithParameters(param)
         .WithCustomTag1(typeof(T).Name);
 
       try
@@ -72,7 +72,7 @@ namespace Rn.NetCore.DbCommon
       }
       finally
       {
-        await MetricService.SubmitPointAsync(builder);
+        await MetricService.SubmitPointAsync(builder.Build());
       }
     }
 
@@ -81,7 +81,7 @@ namespace Rn.NetCore.DbCommon
       // TODO: [TESTS] (BaseRepo.GetSingle) Add tests
       var builder = new RepoMetricBuilder(RepoName, methodName, nameof(GetSingle))
         .ForConnection(ConnectionName)
-        .WithHasParams(param)
+        .WithParameters(param)
         .WithCustomTag1(typeof(T).Name);
 
       try
@@ -110,7 +110,7 @@ namespace Rn.NetCore.DbCommon
       }
       finally
       {
-        await MetricService.SubmitPointAsync(builder);
+        await MetricService.SubmitPointAsync(builder.Build());
       }
     }
 
@@ -119,7 +119,7 @@ namespace Rn.NetCore.DbCommon
       // TODO: [TESTS] (BaseRepo.ExecuteAsync) Add tests
       var builder = new RepoMetricBuilder(RepoName, methodName, nameof(ExecuteAsync))
         .ForConnection(ConnectionName)
-        .WithHasParams(param);
+        .WithParameters(param);
 
       if (param != null)
         builder.WithCustomTag1(param.GetType().Name);
@@ -149,7 +149,7 @@ namespace Rn.NetCore.DbCommon
       }
       finally
       {
-        await MetricService.SubmitPointAsync(builder);
+        await MetricService.SubmitPointAsync(builder.Build());
       }
     }
 
