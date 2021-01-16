@@ -9,7 +9,7 @@ using MySql.Data.MySqlClient;
 using Rn.NetCore.Common.Helpers;
 using Rn.NetCore.Common.Logging;
 
-namespace Rn.NetCore.DbCommon
+namespace Rn.NetCore.DbCommon.Helpers
 {
   public interface IDbHelper
   {

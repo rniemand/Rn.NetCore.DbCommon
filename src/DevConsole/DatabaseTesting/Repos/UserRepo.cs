@@ -3,6 +3,8 @@ using DevConsole.DatabaseTesting.Entities;
 using Rn.NetCore.Common.Logging;
 using Rn.NetCore.Common.Metrics;
 using Rn.NetCore.DbCommon;
+using Rn.NetCore.DbCommon.Helpers;
+using Rn.NetCore.DbCommon.Repos;
 
 namespace DevConsole.DatabaseTesting.Repos
 {

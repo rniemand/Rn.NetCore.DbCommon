@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rn.NetCore.DbCommon
+namespace Rn.NetCore.DbCommon.Helpers
 {
   public static class SqlFormatter
   {

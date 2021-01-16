@@ -12,6 +12,7 @@ using Rn.NetCore.Common.Logging;
 using Rn.NetCore.Common.Metrics;
 using Rn.NetCore.Common.Metrics.Interfaces;
 using Rn.NetCore.DbCommon;
+using Rn.NetCore.DbCommon.Helpers;
 using Rn.NetCore.Metrics.Rabbit;
 
 namespace DevConsole

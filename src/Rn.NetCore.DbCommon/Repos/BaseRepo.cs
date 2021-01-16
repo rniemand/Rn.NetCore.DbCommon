@@ -6,8 +6,9 @@ using Dapper;
 using Rn.NetCore.Common.Logging;
 using Rn.NetCore.Common.Metrics;
 using Rn.NetCore.Common.Metrics.Builders;
+using Rn.NetCore.DbCommon.Helpers;
 
-namespace Rn.NetCore.DbCommon
+namespace Rn.NetCore.DbCommon.Repos
 {
   public abstract class BaseRepo<TRepo>
   {
