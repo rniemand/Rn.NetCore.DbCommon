@@ -1,58 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Configuration;
-using MySql.Data.MySqlClient;
 using Rn.NetCore.Common.Helpers;
 using Rn.NetCore.Common.Logging;
 
 namespace Rn.NetCore.DbCommon.Helpers
 {
-  public interface IDbHelper
+  public class MSSqlHelper : IDbHelper
   {
-    IDbConnection GetConnection(string connection);
+    // TODO: [BREAK-OUT] (MSSqlHelper) Break out into own lib
 
-    Task<int> ExecuteAsync(IDbConnection cnn,
-      string sql,
-      object param = null,
-      IDbTransaction transaction = null,
-      int? commandTimeout = null,
-      CommandType? commandType = null);
-
-    ProcedureHelper GetProcedureHelper(string connection);
-  }
-
-  public class DbHelper : IDbHelper
-  {
-    private readonly ILoggerAdapter<DbHelper> _logger;
+    private readonly ILoggerAdapter<MSSqlHelper> _logger;
     private readonly IJsonHelper _jsonHelper;
-    private readonly IConfiguration _configuration;
     private readonly Dictionary<string, string> _connectionStrings;
 
-    // Constructor
-    public DbHelper(
-      ILoggerAdapter<DbHelper> logger,
+    public MSSqlHelper(
+      ILoggerAdapter<MSSqlHelper> logger,
       IJsonHelper jsonHelper,
       IConfiguration configuration)
     {
-      // TODO: [TESTS] (DbHelper.DbHelper) Add tests
-
-      _configuration = configuration;
-      _jsonHelper = jsonHelper;
+      // TODO: [TESTS] (MSSqlHelper) Add tests
       _logger = logger;
+      _jsonHelper = jsonHelper;
       _connectionStrings = new Dictionary<string, string>();
 
-      LoadConnectionStrings();
+      LoadConnectionStrings(configuration);
     }
 
 
-    // Public methods
+    // Interface Methods
     public IDbConnection GetConnection(string connection)
     {
-      // TODO: [TESTS] (DbHelper.GetConnection) Add tests
+      // TODO: [TESTS] (MSSqlHelper.GetConnection) Add tests
       var conString = GetConnectionString(connection);
 
       // Ensure that we have a connection string to work with
@@ -62,7 +46,7 @@ namespace Rn.NetCore.DbCommon.Helpers
       }
 
       // Create and open the requested connection
-      var sqlCon = new MySqlConnection(conString);
+      var sqlCon = new SqlConnection(conString);
 
       if (sqlCon.State != ConnectionState.Open)
       {
@@ -74,15 +58,15 @@ namespace Rn.NetCore.DbCommon.Helpers
     }
 
     public async Task<int> ExecuteAsync(
-        IDbConnection cnn,
-        string sql,
-        object param = null,
-        IDbTransaction transaction = null,
-        int? commandTimeout = null,
-        CommandType? commandType = null)
+      IDbConnection cnn,
+      string sql,
+      object param = null,
+      IDbTransaction transaction = null,
+      int? commandTimeout = null,
+      CommandType? commandType = null)
     {
-      // TODO: [TESTS] (DbHelper.ExecuteAsync) Add tests
-      // TODO: [REVISE] (DbHelper.ExecuteAsync) Revise this code
+      // TODO: [TESTS] (MSSqlHelper.ExecuteAsync) Add tests
+      // TODO: [REVISE] (MSSqlHelper.ExecuteAsync) Revise this logic
 
       try
       {
@@ -100,7 +84,7 @@ namespace Rn.NetCore.DbCommon.Helpers
         if (param != null)
         {
           sb.Append(Environment.NewLine + Environment.NewLine);
-          // TODO: [ABSTRACT] (DbHelper) Abstract this
+          // TODO: [ABSTRACT] (MySqlHelper) Abstract this
           var jsonArgs = _jsonHelper.SerializeObject(param, true);
           sb.Append($"Args: {jsonArgs}");
         }
@@ -114,16 +98,18 @@ namespace Rn.NetCore.DbCommon.Helpers
       }
     }
 
-    public ProcedureHelper GetProcedureHelper(string connection) 
+    public ProcedureHelper GetProcedureHelper(string connection)
     {
-      // TODO: [TESTS] (DbHelper.GetProcedureHelper) Add tests
-      return new ProcedureHelper(GetConnection(connection)); 
-    } 
+      // TODO: [TESTS] (MSSqlHelper.GetProcedureHelper) Add tests
+      return new ProcedureHelper(GetConnection(connection));
+    }
 
-    private void LoadConnectionStrings()
+
+    // Internal methods
+    private void LoadConnectionStrings(IConfiguration configuration)
     {
-      // TODO: [TESTS] (DbHelper.LoadConnectionStrings) Add tests
-      var conStrings = _configuration
+      // TODO: [TESTS] (MSSqlHelper.LoadConnectionStrings) Add tests
+      var conStrings = configuration
         .GetSection("ConnectionStrings")
         ?.GetChildren() ?? new IConfigurationSection[0];
 
@@ -135,7 +121,7 @@ namespace Rn.NetCore.DbCommon.Helpers
 
     private string GetConnectionString(string name)
     {
-      // TODO: [TESTS] (DbHelper.GetConnectionString) Add tests
+      // TODO: [TESTS] (MSSqlHelper.GetConnectionString) Add tests
       return !_connectionStrings.ContainsKey(name)
         ? null
         : _connectionStrings[name];
