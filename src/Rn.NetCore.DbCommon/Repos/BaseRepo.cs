@@ -234,6 +234,44 @@ namespace Rn.NetCore.DbCommon.Repos
       return 0;
     }
 
+    protected async Task<DatabaseRow> SingleRowQuery(string methodName, string sql, object param = null, string connection = null)
+    {
+      // TODO: [TESTS] (BaseRepo.SingleRowQuery) Add tests
+      if (string.IsNullOrWhiteSpace(connection))
+        connection = ConnectionName;
+
+      var builder = new RepoMetricBuilder(RepoName, methodName, nameof(SingleRowQuery))
+        .ForConnection(connection)
+        .WithParameters(param)
+        .WithCustomTag1(nameof(DatabaseRow), true)
+        .WithCustomTag2("RawSQL", true);
+
+      try
+      {
+        using (builder.WithTiming())
+        {
+          var queryResult = (await DbHelper
+              .GetConnection(connection)
+              .QueryAsync<object>(sql, param)
+            ).AsList();
+
+          builder.WithResultCount(queryResult.Count);
+          return new DatabaseRow(queryResult.First());
+        }
+      }
+      catch (Exception ex)
+      {
+        Logger.LogUnexpectedException(ex);
+        builder.WithException(ex);
+      }
+      finally
+      {
+        await Metrics.SubmitPointAsync(builder.Build());
+      }
+
+      return new DatabaseRow();
+    }
+
     // Internal methods
     public void LogSqlCommand(string methodName, string sql, object param = null)
     {
