@@ -44,7 +44,7 @@ namespace Rn.NetCore.DbCommon.Repos
       var builder = new RepoMetricBuilder(RepoName, methodName, nameof(GetList))
         .ForConnection(ConnectionName)
         .WithParameters(param)
-        .WithCustomTag1(typeof(T).Name);
+        .WithCustomTag1(typeof(T).Name, true);
 
       try
       {
@@ -84,7 +84,7 @@ namespace Rn.NetCore.DbCommon.Repos
       var builder = new RepoMetricBuilder(RepoName, methodName, nameof(GetSingle))
         .ForConnection(ConnectionName)
         .WithParameters(param)
-        .WithCustomTag1(typeof(T).Name);
+        .WithCustomTag1(typeof(T).Name, true);
 
       try
       {
@@ -121,7 +121,8 @@ namespace Rn.NetCore.DbCommon.Repos
       // TODO: [TESTS] (BaseRepo.ExecuteAsync) Add tests
       var builder = new RepoMetricBuilder(RepoName, methodName, nameof(ExecuteAsync))
         .ForConnection(ConnectionName)
-        .WithParameters(param);
+        .WithParameters(param)
+        .WithCustomTag1(nameof(Int32), true);
 
       if (param != null)
         builder.WithCustomTag1(param.GetType().Name);
@@ -192,6 +193,45 @@ namespace Rn.NetCore.DbCommon.Repos
       }
 
       return new DatabaseRow();
+    }
+
+    protected async Task<int> ExecuteProcedureAsync(string methodName, string procName, object param = null, string connection = null)
+    {
+      // TODO: [TESTS] (BaseRepo.ExecuteProcedureAsync) Add tests
+      if (string.IsNullOrWhiteSpace(connection))
+        connection = ConnectionName;
+
+      var builder = new RepoMetricBuilder(RepoName, methodName, nameof(ExecuteProcedureAsync))
+        .ForConnection(connection)
+        .WithParameters(param)
+        .WithCustomTag1(nameof(Int32), true)
+        .WithCustomTag2(procName);
+
+      try
+      {
+        using (builder.WithTiming())
+        {
+          var rowCount = await DbHelper
+            .GetProcedureHelper(connection)
+            .ForProcedure(procName)
+            .WithParams(param)
+            .ExecuteAsync();
+
+          builder.WithResultCount(rowCount);
+          return rowCount;
+        }
+      }
+      catch (Exception ex)
+      {
+        Logger.LogUnexpectedException(ex);
+        builder.WithException(ex);
+      }
+      finally
+      {
+        await Metrics.SubmitPointAsync(builder.Build());
+      }
+
+      return 0;
     }
 
     // Internal methods
