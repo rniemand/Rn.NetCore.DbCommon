@@ -7,6 +7,7 @@ using Rn.NetCore.Common.Logging;
 using Rn.NetCore.Common.Metrics;
 using Rn.NetCore.Common.Metrics.Builders;
 using Rn.NetCore.DbCommon.Helpers;
+using Rn.NetCore.DbCommon.Models;
 
 namespace Rn.NetCore.DbCommon.Repos
 {
@@ -16,21 +17,21 @@ namespace Rn.NetCore.DbCommon.Repos
     public string ConnectionName { get; }
     public ILoggerAdapter<TRepo> Logger { get; }
     public IDbHelper DbHelper { get; }
-    public IMetricService MetricService { get; }
+    public IMetricService Metrics { get; }
 
 
     // Constructor
     protected BaseRepo(
       ILoggerAdapter<TRepo> logger,
       IDbHelper dbHelper,
-      IMetricService metricService,
+      IMetricService metrics,
       string repoName,
       string connectionName)
     {
       // TODO: [TESTS] (BaseRepo.BaseRepo) Add tests
       Logger = logger;
       DbHelper = dbHelper;
-      MetricService = metricService;
+      Metrics = metrics;
       RepoName = repoName;
       ConnectionName = connectionName;
     }
@@ -73,7 +74,7 @@ namespace Rn.NetCore.DbCommon.Repos
       }
       finally
       {
-        await MetricService.SubmitPointAsync(builder.Build());
+        await Metrics.SubmitPointAsync(builder.Build());
       }
     }
 
@@ -111,7 +112,7 @@ namespace Rn.NetCore.DbCommon.Repos
       }
       finally
       {
-        await MetricService.SubmitPointAsync(builder.Build());
+        await Metrics.SubmitPointAsync(builder.Build());
       }
     }
 
@@ -150,8 +151,47 @@ namespace Rn.NetCore.DbCommon.Repos
       }
       finally
       {
-        await MetricService.SubmitPointAsync(builder.Build());
+        await Metrics.SubmitPointAsync(builder.Build());
       }
+    }
+
+    protected async Task<DatabaseRow> SingleRowProcedure(string methodName, string procName, object param = null, string connection = null)
+    {
+      // TODO: [TESTS] (BaseRepo.SingleRowProcedure) Add tests
+      if (string.IsNullOrWhiteSpace(connection))
+        connection = ConnectionName;
+
+      var builder = new RepoMetricBuilder(RepoName, methodName, nameof(SingleRowProcedure))
+        .ForConnection(connection)
+        .WithParameters(param)
+        .WithCustomTag1(nameof(DatabaseRow), true)
+        .WithCustomTag2(procName);
+
+      try
+      {
+        using (builder.WithTiming())
+        {
+          var row = await DbHelper
+            .GetProcedureHelper(connection)
+            .ForProcedure(procName)
+            .WithParams(param)
+            .ExecuteAsRow();
+
+          builder.WithResultCount(row.ValidRow ? 1 : 0);
+          return row;
+        }
+      }
+      catch (Exception ex)
+      {
+        Logger.LogUnexpectedException(ex);
+        builder.WithException(ex);
+      }
+      finally
+      {
+        await Metrics.SubmitPointAsync(builder.Build());
+      }
+
+      return new DatabaseRow();
     }
 
     // Internal methods

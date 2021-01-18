@@ -13,7 +13,7 @@ namespace Rn.NetCore.DbCommon.Helpers
 {
   public interface IDbHelper
   {
-    IDbConnection GetConnection(string name);
+    IDbConnection GetConnection(string connection);
 
     Task<int> ExecuteAsync(IDbConnection cnn,
       string sql,
@@ -21,6 +21,8 @@ namespace Rn.NetCore.DbCommon.Helpers
       IDbTransaction transaction = null,
       int? commandTimeout = null,
       CommandType? commandType = null);
+
+    ProcedureHelper GetProcedureHelper(string connection);
   }
 
   public class DbHelper : IDbHelper
@@ -48,15 +50,15 @@ namespace Rn.NetCore.DbCommon.Helpers
 
 
     // Public methods
-    public IDbConnection GetConnection(string name)
+    public IDbConnection GetConnection(string connection)
     {
       // TODO: [TESTS] (DbHelper.GetConnection) Add tests
-      var conString = GetConnectionString(name);
+      var conString = GetConnectionString(connection);
 
       // Ensure that we have a connection string to work with
       if (conString == null)
       {
-        throw new Exception($"Unable to find connection string: {name}");
+        throw new Exception($"Unable to find connection string: {connection}");
       }
 
       // Create and open the requested connection
@@ -111,6 +113,12 @@ namespace Rn.NetCore.DbCommon.Helpers
         throw;
       }
     }
+
+    public ProcedureHelper GetProcedureHelper(string connection) 
+    {
+      // TODO: [TESTS] (DbHelper.GetProcedureHelper) Add tests
+      return new ProcedureHelper(GetConnection(connection)); 
+    } 
 
     private void LoadConnectionStrings()
     {
