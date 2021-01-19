@@ -170,6 +170,8 @@ namespace Rn.NetCore.DbCommon.Repos
 
       try
       {
+        // TODO: [LOGGING] (BaseRepo.SingleRowProcedure) Log command
+
         using (builder.WithTiming())
         {
           var row = await DbHelper
@@ -209,6 +211,8 @@ namespace Rn.NetCore.DbCommon.Repos
 
       try
       {
+        // TODO: [LOGGING] (BaseRepo.ExecuteProcedureAsync) Log command
+
         using (builder.WithTiming())
         {
           var rowCount = await DbHelper
@@ -248,6 +252,8 @@ namespace Rn.NetCore.DbCommon.Repos
 
       try
       {
+        // TODO: [LOGGING] (BaseRepo.SingleRowQuery) Log command
+
         using (builder.WithTiming())
         {
           var queryResult = (await DbHelper
@@ -279,11 +285,20 @@ namespace Rn.NetCore.DbCommon.Repos
       // TODO: [METRICS] (BaseRepo.LogSqlCommand) Add metrics
       // TODO: [CONFIG] (BaseRepo.LogSqlCommand) Make configurable
 
-      Logger.Info(
-        "[{repo}.{method}] Running SQL command: {sql}",
-        RepoName, methodName,
-        SqlFormatter.MergeParams(sql, param)
-      );
+      return;
+
+      try
+      {
+        Logger.Info(
+          "[{repo}.{method}] Running SQL command: {sql}",
+          RepoName, methodName,
+          SqlFormatter.MergeParams(sql, param)
+        );
+      }
+      catch (Exception)
+      {
+        // Swallow
+      }
     }
   }
 }

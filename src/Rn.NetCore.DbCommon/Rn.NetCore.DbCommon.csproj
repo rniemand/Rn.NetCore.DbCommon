@@ -6,8 +6,8 @@
     <Authors>Richard Niemand</Authors>
     <Description>Simple DB helper classes for my various projects</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.0.109</Version>
-    <AssemblyVersion>1.0.0.109</AssemblyVersion>
+    <Version>1.0.0.110</Version>
+    <AssemblyVersion>1.0.0.110</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
