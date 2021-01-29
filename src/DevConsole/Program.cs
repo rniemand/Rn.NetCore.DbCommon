@@ -75,7 +75,7 @@ namespace DevConsole
     private static void ConfigureDI_DBComponents(IServiceCollection services)
     {
       services
-        .AddSingleton<IDbHelper, DbHelper>()
+        .AddSingleton<IDbHelper, MySqlHelper>()
         .AddSingleton<IUserRepo, UserRepo>();
     }
 
