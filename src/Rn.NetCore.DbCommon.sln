@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevConsole", "DevConsole\De
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{A1FEB665-10CB-4590-848B-E4E41B4C52F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rn.NetCore.DbCommon.T1.Tests", "Rn.NetCore.DbCommon.T1.Tests\Rn.NetCore.DbCommon.T1.Tests.csproj", "{47838083-7592-4384-99F7-957AB724ED65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +25,17 @@ Global
 		{F6D6A1EE-015C-4C95-90D5-878D36971A88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6D6A1EE-015C-4C95-90D5-878D36971A88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6D6A1EE-015C-4C95-90D5-878D36971A88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47838083-7592-4384-99F7-957AB724ED65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47838083-7592-4384-99F7-957AB724ED65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47838083-7592-4384-99F7-957AB724ED65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47838083-7592-4384-99F7-957AB724ED65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0EE2FC66-96F9-4027-8069-77158EC5222D} = {A1FEB665-10CB-4590-848B-E4E41B4C52F1}
+		{47838083-7592-4384-99F7-957AB724ED65} = {A1FEB665-10CB-4590-848B-E4E41B4C52F1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {66B6A836-5054-4212-BB79-5B53F3BC396F}
