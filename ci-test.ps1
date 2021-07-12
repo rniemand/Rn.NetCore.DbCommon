@@ -1,22 +1,20 @@
 param (
-  $outputRoot = $PSScriptRoot
+  $output             = $PSScriptRoot,
+  $testCsprojPattern  = "*T1.Tests.csproj",
+  $configuration      = "Release"
 )
 
-$workingDir            = Join-Path $PSScriptRoot "\";
-$outputRoot            = Join-Path $outputRoot "\";
-$sourceDir             = Join-Path $workingDir "src";
-$publishDir            = Join-Path $outputRoot "artifacts";
-$toolsDir              = Join-Path $workingDir "tools";
+$output                = Join-Path $output "\";
+$workingRoot           = Join-Path $PSScriptRoot "\";
+
+$sourceDir             = Join-Path $workingRoot "src";
+$publishDir            = Join-Path $output "artifacts";
+$toolsDir              = Join-Path $workingRoot "tools";
 $testPublishDir        = Join-Path $publishDir "t1-publih";
 $testResultsDir        = Join-Path $publishDir "t1-results";
 $testCoverageDir       = Join-Path $publishDir "t1-coverage";
 $coverletExe           = "$toolsDir\coverlet.exe";
 $reportGeneratorExe    = "$toolsDir\reportgenerator.exe"
-$testCsprojPattern     = "*T1.Tests.csproj";
-$buildConfiguration    = "Release";
-$installCmd            = "";
-$buildCmd              = "";
-$currentPublishDir     = "";
 
 
 # ==============================================================
@@ -38,6 +36,8 @@ foreach ($cleanupDirectory in $cleanupDirectories) {
 # Install tooling
 # ==============================================================
 #
+$installCmd = "";
+
 if(!(Test-Path $coverletExe)){
   Write-Host "Installing: coverlet.console"
   $installCmd = "dotnet tool install coverlet.console --tool-path $toolsDir";
@@ -60,12 +60,15 @@ if ($testProjects.count -eq 0) {
   throw "No files matched the $testCsprojPattern pattern. The script cannot continue."
 }
 
+$buildCmd          = "";
+$currentPublishDir = "";
+
 foreach ($testProject in $testProjects) {
   # Build test project
   $dllFileName = $testProject.BaseName + ".dll";
   $currentPublishDir = Join-Path $testPublishDir $testProject.BaseName
   $testDllFile = Join-Path $currentPublishDir $dllFileName;
-  $buildCmd = "dotnet build `"$testProject`" --configuration $buildConfiguration --output `"$currentPublishDir`"";
+  $buildCmd = "dotnet build `"$testProject`" --configuration $configuration --output `"$currentPublishDir`"";
   Invoke-Expression $buildCmd;
 
   if(!(Test-Path $testDllFile)) {
@@ -82,7 +85,7 @@ foreach ($testProject in $testProjects) {
     "test",
     "$( $testProject.FullName )",
     "--logger:trx;LogFileName=$testResultFileName",
-    "--configuration $buildConfiguration",
+    "--configuration $configuration",
     "--no-build", 
     "--no-restore"
   );
