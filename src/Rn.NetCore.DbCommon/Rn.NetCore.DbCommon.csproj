@@ -1,19 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Richard Niemand</Authors>
     <Description>Simple DB helper classes for my various projects</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.0.110</Version>
-    <AssemblyVersion>1.0.0.110</AssemblyVersion>
+    <Version>5.0.0.100</Version>
+    <AssemblyVersion>5.0.0.100</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.0.78" />
-    <PackageReference Include="MySql.Data" Version="8.0.23" />
-    <PackageReference Include="Rn.NetCore.Common" Version="3.0.0.124" />
+    <PackageReference Include="Dapper" Version="2.0.90" />
+    <PackageReference Include="MySql.Data" Version="8.0.25" />
+    <PackageReference Include="Rn.NetCore.Common" Version="5.0.1.101" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
   </ItemGroup>
 
