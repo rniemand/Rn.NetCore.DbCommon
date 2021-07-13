@@ -1,7 +1,8 @@
 param (
   $output             = $PSScriptRoot,
   $testCsprojPattern  = "*T1.Tests.csproj",
-  $configuration      = "Release"
+  $configuration      = "Release",
+  $frameworkVersion   = "net5.0"
 )
 
 $output                = Join-Path $output "\";
@@ -10,7 +11,7 @@ $workingRoot           = Join-Path $PSScriptRoot "\";
 $sourceDir             = Join-Path $workingRoot "src";
 $publishDir            = Join-Path $output "artifacts";
 $toolsDir              = Join-Path $workingRoot "tools";
-$testPublishDir        = Join-Path $publishDir "t1-publih";
+$testPublishDir        = Join-Path $publishDir "t1-publish";
 $testResultsDir        = Join-Path $publishDir "t1-results";
 $testCoverageDir       = Join-Path $publishDir "t1-coverage";
 $coverletExe           = "$toolsDir\coverlet.exe";
@@ -65,11 +66,19 @@ $currentPublishDir = "";
 
 foreach ($testProject in $testProjects) {
   # Build test project
-  $dllFileName = $testProject.BaseName + ".dll";
-  $currentPublishDir = Join-Path $testPublishDir $testProject.BaseName
-  $testDllFile = Join-Path $currentPublishDir $dllFileName;
-  $buildCmd = "dotnet build `"$testProject`" --configuration $configuration --output `"$currentPublishDir`"";
-  Invoke-Expression $buildCmd;
+  $dllFileName         = $testProject.BaseName + ".dll";
+  $currentPublishDir   = Join-Path $testPublishDir $testProject.BaseName
+  $testDllFile         = Join-Path $currentPublishDir $dllFileName;
+  $buildCmd            = "dotnet build `"$testProject`" --configuration $configuration";
+  Write-Output         "Running Build: $buildCmd"
+  Invoke-Expression    $buildCmd;
+
+  # Build published DLL file path
+  $projectBaseDir      = Join-Path $testProject.Directory.FullName "\";
+  $projectBinDir       = Join-Path $projectBaseDir "bin\";
+  $projectBinCfgDir    = Join-Path $projectBinDir ($configuration + "\");
+  $projectFrameworkDir = Join-Path $projectBinCfgDir ($frameworkVersion + "\");
+  $testDllFile         = Join-Path $projectFrameworkDir $dllFileName;
 
   if(!(Test-Path $testDllFile)) {
     throw "Unable to find test DLL file: $testDllFile"
@@ -92,12 +101,12 @@ foreach ($testProject in $testProjects) {
   
   # https://www.jetbrains.com/help/dotcover/dotCover__Console_Runner_Commands.html
   $coverletDotnetArguments = @(
-    $testDllFile,
-    "-t `"dotnet`"",
-    "-a `"$dotnetTestTargetArgs`"",
-    "-o $coverageOutputDir",
-    "-f `"cobertura`"",
-    "-f `"opencover`""
+    "$testDllFile",
+    "--target `"dotnet`"",
+    "--targetargs `"$dotnetTestTargetArgs`"",
+    "--output `"$coverageOutputDir`"",
+    "--format `"cobertura`"",
+    "--format `"opencover`""
   );
 
   $coverletCmd = "$coverletExe $coverletDotnetArguments";

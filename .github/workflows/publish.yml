@@ -44,9 +44,9 @@ jobs:
         shell: powershell
         run: |
           $workingDir     = $PSScriptRoot
-          $expression     = ""
           $artifactsDir   = Join-Path $workingDir "artifacts"
           $sqReportPaths  = "$artifactsDir/t1-coverage/**/coverage.opencover.xml"
+          $expression     = ""
           
           $sonarQubeParams = @(
             "/k:`"${{ secrets.SONAR_PROJECT }}`"",
@@ -60,10 +60,10 @@ jobs:
           $expression = ".\.sonar\scanner\dotnet-sonarscanner begin $sonarQubeParams"
           Invoke-Expression $expression
           
-          $expression = ".\ci-build.ps1 -project `"Rn.NetCore.DbCommon`" -output `"$artifactsDir`""
+          $expression = ".\ci-build.ps1 -project `"Rn.NetCore.DbCommon`" -output `"$workingDir`""
           Invoke-Expression $expression
 
-          $expression = ".\ci-test.ps1 -output `"$artifactsDir`""
+          $expression = ".\ci-test.ps1 -output `"$workingDir`""
           Invoke-Expression $expression
           
           $expression = ".\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login=`"${{ secrets.SONAR_TOKEN }}`""
