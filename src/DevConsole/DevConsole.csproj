@@ -10,8 +10,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="NLog" Version="4.7.10" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.7.3" />
-    <PackageReference Include="Rn.NetCore.Common" Version="5.0.1.101" />
-    <PackageReference Include="Rn.NetCore.Metrics.Rabbit" Version="3.0.0.101" />
+    <PackageReference Include="Rn.NetCore.Common" Version="5.0.1.105" />
+    <PackageReference Include="Rn.NetCore.Metrics.Rabbit" Version="5.0.1.100" />
   </ItemGroup>
 
   <ItemGroup>
