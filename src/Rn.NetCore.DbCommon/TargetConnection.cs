@@ -2,6 +2,8 @@
 {
   public static class TargetConnection
   {
-    public const string Default = "Rn.NetCore.Default";
+    public const string RnCoreDefault = "Rn.NetCore.Default";
+    public const string Default = "Default";
+    public const string AppDefault = "AppDefault";
   }
 }
